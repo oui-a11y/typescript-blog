@@ -176,14 +176,12 @@ typeof 只能用在具体的对象上，这与 js 中的 typeof 是一致的，�
 
 ```typescript
 const typestr = typeof me;   // typestr的值为"object"
-复制代码
 ```
 
 typeof 可以和 keyof 一起使用(因为 typeof 是返回一个类型嘛)，如下：
 
 ```typescript
 type PersonKey = keyof typeof me;   // 'name' | 'age'
-复制代码
 ```
 
 总结起来 typeof 的语法格式如下：
@@ -218,7 +216,6 @@ const obj: TypeToNumber<Person> = { name: 10, age: 10 }
 ```
 [ 自定义变量名 in 枚举类型 ]: 类型
 ```
-
 
 
 
