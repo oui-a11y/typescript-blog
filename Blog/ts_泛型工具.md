@@ -122,3 +122,136 @@ type Required1<T> = {
 };
 ```
 
+##### FunctionPropertyNames\<T>
+
+>获取类型中是函数类型对应名称
+
+```typescript
+type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T]
+```
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  age: number;
+  updateName(newName: string): void;
+}
+type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never;
+}[keyof T]
+
+type T1 = FunctionPropertyNames<User> //type T1 = "updateName"
+```
+
+##### FunctionProperties\<T>
+
+>获取类型中的函数类型
+
+```typescript
+type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
+```
+
+##### NonFunctionPropertyNames\<T>
+
+>获取类型中不是函数类型对应名称
+
+```typescript
+type NonFunctionPropertyNames<T> = {
+    [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+```
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  age: number;
+  updateName(newName: string): void;
+}
+type NonFunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+type T1 = NonFunctionPropertyNames<User> //type T1 = "id" | "name" | "age"
+```
+
+##### PartialByKeys<T,K extends keyof T>
+
+>用于把对象类型中指定的 keys 变成可选的
+
+```typescript
+type Simplify<T> = {
+  [P in keyof T]: T[P];
+};
+type User = {
+  id: number;
+  name: string;
+  age: number;
+};
+
+type PartialByKeys<T, K extends keyof T> = Simplify<
+  Partial<T> & Pick<T, Exclude<keyof T, K>>
+>;
+
+type U1 = PartialByKeys<User, "id">; //{id?: number;name: string;age: number;}
+type U2 = PartialByKeys<User, "id" | "name">; //{id?: number;name?: string;age: number;}
+```
+
+具体梳理下实现思路
+
+```typescript
+//目标是 type PartialByKeys<T, K extends keyof T>
+type T1 = Simplify< //{id?: number;name: string;age: number;}
+  {
+    id?: number;
+    name?: string;
+    age?: number;
+  } & {
+    name: string;
+    age: number;
+  }
+>;
+//按照以上实现 为实现type主要方式
+//剩余就是传入动态参数
+type Simplify<T> = {
+  [P in keyof T]: T[P];
+};
+
+type T1<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type T2 = T1<User, "id">;//{name: string;age: number;}
+type T3 = Partial<User>;//{id?: number;name?: string;age?: number;}
+type T4 = Simplify<T2 & T3>;//{id?: number;name: string;age: number;}
+```
+
+##### RequiredByKeys\<T,K>
+
+>用于把对象类型中指定的 keys 变成必须的
+
+```typescript
+type User = {
+  id?: number;
+  name?: string;
+  age?: number;
+};
+type Simplify<T> = {
+  [P in keyof T]: T[P];
+};
+type RequiredByKeys<T, K extends keyof T> = Simplify<
+  Required<T> & Pick<T, Exclude<keyof T, K>>
+>;
+type t1 = Required<User>;
+type t2 = RequiredByKeys<User, "id" | "name">;
+```
+
+
+
+
+
+
+
+
+
+
+
